@@ -6,7 +6,7 @@
 <title>Postcard AR</title>
 
 <!-- ============================================================
-     POSTCARD AR — v3 (minimal, matches official MindAR example)
+     POSTCARD AR — v4 (portrait prompt + orientation reload + smoothing)
 
      Test target (display on a monitor and point phone at it):
      https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/card-example/card.png
@@ -60,16 +60,39 @@
     box-shadow: 0 2px 12px rgba(0,0,0,0.35);
   }
   #cta.visible { display: block; }
+
+  /* Landscape overlay: scanning is a portrait activity, and MindAR
+     tracking degrades after rotation — steer people to portrait. */
+  #rotate-prompt { display: none; }
+
+  @media (orientation: landscape) {
+    #rotate-prompt {
+      display: flex;
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(0, 0, 0, 0.85);
+      color: #fff;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 17px;
+      line-height: 1.5;
+      text-align: center;
+      padding: 24px;
+    }
+  }
 </style>
 </head>
 
 <body>
 
-<div id="version">v3</div>
+<div id="version">v4</div>
+<div id="rotate-prompt">Please rotate your phone to portrait&nbsp;&#128241;</div>
 <a id="cta" href="https://cloudtour.tv" target="_blank" rel="noopener">Open the full tour</a>
 
 <a-scene
-  mindar-image="imageTargetSrc: https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/card-example/card.mind;"
+  mindar-image="imageTargetSrc: https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/card-example/card.mind; filterMinCF: 0.0001; filterBeta: 0.01;"
   color-space="sRGB"
   renderer="colorManagement: true; physicallyCorrectLights: true"
   vr-mode-ui="enabled: false"
@@ -101,6 +124,17 @@
   const cta = document.querySelector("#cta");
   anchor.addEventListener("targetFound", () => cta.classList.add("visible"));
   anchor.addEventListener("targetLost",  () => cta.classList.remove("visible"));
+
+  // MindAR locks camera dimensions at startup and doesn't survive
+  // orientation changes — restart cleanly when the phone rotates.
+  // (Libraries are cached, so the reload is quick.)
+  let lastPortrait = window.matchMedia("(orientation: portrait)").matches;
+  window.matchMedia("(orientation: portrait)").addEventListener("change", (e) => {
+    if (e.matches !== lastPortrait) {
+      lastPortrait = e.matches;
+      setTimeout(() => location.reload(), 300);
+    }
+  });
 </script>
 
 </body>
