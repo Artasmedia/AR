@@ -64,9 +64,9 @@ const CARD_ASPECT = 148 / 105;
 const MODEL_URL =
   "https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/card-example/softmind/scene.gltf";
 
-const MODEL_SCALE    = "0.05 0.05 0.05"; // tune per model
-const MODEL_POSITION = "0 0.1 0";        // metres-ish above card centre
-const MODEL_SPIN     = true;             // slow turntable rotation
+const MODEL_SCALE    = "0.005 0.005 0.005"; // tune per model (card is 1 unit wide)
+const MODEL_POSITION = "0 0 0";             // sitting on the card
+const MODEL_SPIN     = false;               // slow turntable rotation
 
 // Optional call-to-action link shown once the target is found.
 // Set to "" to hide the button entirely.
@@ -87,6 +87,14 @@ const CTA_LABEL = "Open the full tour";
 
   /* MindAR injects its own loading UI; hide it, we draw our own */
   .mindar-ui-overlay { display: none !important; }
+
+  /* Make sure the scene and camera feed fill the screen */
+  a-scene {
+    position: fixed !important;
+    inset: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+  }
 
   #overlay {
     position: fixed;
@@ -221,7 +229,6 @@ document.addEventListener("DOMContentLoaded", () => {
   scene.setAttribute("renderer", "colorManagement: true; physicallyCorrectLights: true");
   scene.setAttribute("vr-mode-ui", "enabled: false");
   scene.setAttribute("device-orientation-permission-ui", "enabled: false");
-  scene.setAttribute("embedded", "");
 
   const assets = document.createElement("a-assets");
 
