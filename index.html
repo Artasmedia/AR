@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>Postcard AR</title>
 <!-- ============================================================
-     POSTCARD AR — v6 (drag to rotate the model, still anchored)
+     POSTCARD AR — v7 (drag to spin and tilt, still anchored)
      Target: Burton Agnes drum photo (./targets.mind)
      Model:  ./burton-agnes-drum.glb
 
@@ -21,30 +21,34 @@
 <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
 <script>
-  /* Drag left/right anywhere on screen to spin the model on its own
-     axis. Tracking (the anchor) and finger rotation (the model) live
-     on different entities, so they never fight. */
+  /* Drag anywhere on screen: left/right spins the model, up/down
+     tilts it (clamped so it can't flip upside down). Tracking (the
+     anchor) and finger rotation (the model) live on different
+     entities, so they never fight. */
   AFRAME.registerComponent("touch-spin", {
     init() {
       const obj = this.el.object3D;
-      let lastX = null;
+      let lastX = null, lastY = null;
 
-      const start = (x) => { lastX = x; };
-      const move = (x) => {
+      const start = (x, y) => { lastX = x; lastY = y; };
+      const move = (x, y) => {
         if (lastX === null) return;
-        obj.rotation.y += (x - lastX) * 0.01; // sensitivity: radians per pixel
-        lastX = x;
+        obj.rotation.y += (x - lastX) * 0.01; // spin — sensitivity: radians per pixel
+        obj.rotation.x += (y - lastY) * 0.01; // tilt
+        // clamp tilt to about ±70° so it never flips over the poles
+        obj.rotation.x = Math.max(-1.2, Math.min(1.2, obj.rotation.x));
+        lastX = x; lastY = y;
       };
-      const end = () => { lastX = null; };
+      const end = () => { lastX = null; lastY = null; };
 
       // Touch (phone)
-      window.addEventListener("touchstart", (e) => start(e.touches[0].clientX), { passive: true });
-      window.addEventListener("touchmove",  (e) => move(e.touches[0].clientX),  { passive: true });
+      window.addEventListener("touchstart", (e) => start(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+      window.addEventListener("touchmove",  (e) => move(e.touches[0].clientX, e.touches[0].clientY),  { passive: true });
       window.addEventListener("touchend", end);
 
       // Mouse (desktop testing)
-      window.addEventListener("mousedown", (e) => start(e.clientX));
-      window.addEventListener("mousemove", (e) => { if (e.buttons) move(e.clientX); });
+      window.addEventListener("mousedown", (e) => start(e.clientX, e.clientY));
+      window.addEventListener("mousemove", (e) => { if (e.buttons) move(e.clientX, e.clientY); });
       window.addEventListener("mouseup", end);
     }
   });
@@ -70,7 +74,7 @@
 </style>
 </head>
 <body>
-<div id="version">v6</div>
+<div id="version">v7</div>
 
 <a-scene
   mindar-image="imageTargetSrc: ./targets.mind; filterMinCF: 0.0001; filterBeta: 0.01;"
