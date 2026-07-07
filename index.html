@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Postcard AR</title>
+
+<!-- ============================================================
+     POSTCARD AR — v3 (minimal, matches official MindAR example)
+
+     Test target (display on a monitor and point phone at it):
+     https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/card-example/card.png
+
+     To use your own postcard:
+     1. Compile the card image at:
+        https://hiukim.github.io/mind-ar-js-doc/tools/compile
+     2. Upload the resulting targets.mind to this repo
+     3. In the a-scene tag below, change imageTargetSrc to ./targets.mind
+     4. Upload your .glb to the repo and change the a-asset-item src
+     5. Tune the scale on the a-gltf-model line
+     ============================================================ -->
+
+<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+<style>
+  /* Deliberately minimal — no backgrounds, nothing that can
+     paint over the camera feed. */
+  html, body { margin: 0; padding: 0; }
+
+  #version {
+    position: fixed;
+    top: max(8px, env(safe-area-inset-top));
+    right: 8px;
+    z-index: 1000;
+    font-family: monospace;
+    font-size: 11px;
+    color: #fff;
+    background: rgba(0,0,0,0.45);
+    padding: 3px 7px;
+    border-radius: 4px;
+    pointer-events: none;
+  }
+
+  #cta {
+    position: fixed;
+    bottom: max(24px, env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: none;
+    text-decoration: none;
+    background: #fff;
+    color: #111;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    border-radius: 999px;
+    padding: 12px 22px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.35);
+  }
+  #cta.visible { display: block; }
+</style>
+</head>
+
+<body>
+
+<div id="version">v3</div>
+<a id="cta" href="https://cloudtour.tv" target="_blank" rel="noopener">Open the full tour</a>
+
+<a-scene
+  mindar-image="imageTargetSrc: https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/card-example/card.mind;"
+  color-space="sRGB"
+  renderer="colorManagement: true; physicallyCorrectLights: true"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false">
+
+  <a-assets>
+    <a-asset-item id="model"
+      src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/card-example/softmind/scene.gltf">
+    </a-asset-item>
+  </a-assets>
+
+  <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+  <a-entity id="anchor" mindar-image-target="targetIndex: 0">
+    <!-- position "0 0 0" = centre of the card; card is 1 unit wide.
+         Tune scale per model: halve it or 10x it until it looks right. -->
+    <a-gltf-model
+      src="#model"
+      position="0 0 0"
+      rotation="0 0 0"
+      scale="0.005 0.005 0.005">
+    </a-gltf-model>
+  </a-entity>
+
+</a-scene>
+
+<script>
+  const anchor = document.querySelector("#anchor");
+  const cta = document.querySelector("#cta");
+  anchor.addEventListener("targetFound", () => cta.classList.add("visible"));
+  anchor.addEventListener("targetLost",  () => cta.classList.remove("visible"));
+</script>
+
+</body>
+</html>
