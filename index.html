@@ -6,7 +6,7 @@
 <title>Postcard AR</title>
 
 <!-- ============================================================
-     POSTCARD AR — v4 (portrait prompt + orientation reload + smoothing)
+     POSTCARD AR — v5 (works portrait AND landscape via reload-on-rotate)
 
      Test target (display on a monitor and point phone at it):
      https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/card-example/card.png
@@ -60,35 +60,12 @@
     box-shadow: 0 2px 12px rgba(0,0,0,0.35);
   }
   #cta.visible { display: block; }
-
-  /* Landscape overlay: scanning is a portrait activity, and MindAR
-     tracking degrades after rotation — steer people to portrait. */
-  #rotate-prompt { display: none; }
-
-  @media (orientation: landscape) {
-    #rotate-prompt {
-      display: flex;
-      position: fixed;
-      inset: 0;
-      z-index: 2000;
-      background: rgba(0, 0, 0, 0.85);
-      color: #fff;
-      align-items: center;
-      justify-content: center;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      font-size: 17px;
-      line-height: 1.5;
-      text-align: center;
-      padding: 24px;
-    }
-  }
 </style>
 </head>
 
 <body>
 
-<div id="version">v4</div>
-<div id="rotate-prompt">Please rotate your phone to portrait&nbsp;&#128241;</div>
+<div id="version">v5</div>
 <a id="cta" href="https://cloudtour.tv" target="_blank" rel="noopener">Open the full tour</a>
 
 <a-scene
