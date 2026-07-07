@@ -66,8 +66,7 @@
 <body>
 
 <div id="version">v5</div>
-<a id="cta" href="https://cloudtour.tv" target="_blank" rel="noopener">Open the full tour</a>
-
+     
 <a-scene
   mindar-image="imageTargetSrc: ./targets.mind; filterMinCF: 0.0001; filterBeta: 0.01;"
   color-space="sRGB"
@@ -98,11 +97,8 @@
 
 <script>
   const anchor = document.querySelector("#anchor");
-  const cta = document.querySelector("#cta");
-  anchor.addEventListener("targetFound", () => cta.classList.add("visible"));
-  anchor.addEventListener("targetLost",  () => cta.classList.remove("visible"));
-
-  // MindAR locks camera dimensions at startup and doesn't survive
+     
+   // MindAR locks camera dimensions at startup and doesn't survive
   // orientation changes — restart cleanly when the phone rotates.
   // (Libraries are cached, so the reload is quick.)
   let lastPortrait = window.matchMedia("(orientation: portrait)").matches;
